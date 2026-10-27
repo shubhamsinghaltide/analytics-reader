@@ -34,7 +34,11 @@
   .timeline::before { content: ""; position: absolute; left: 9px; top: 6px; bottom: 6px; width: 2px; background: var(--border); }
   .ev { position: relative; background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--kind); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
   .ev::before { content: ""; position: absolute; left: -27px; top: 18px; width: 10px; height: 10px; border-radius: 50%; background: var(--kind); box-shadow: 0 0 0 3px var(--bg); }
+  .ev summary { list-style: none; cursor: pointer; }
+  .ev summary::-webkit-details-marker { display: none; }
   .head { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .head::after { content: "▸"; margin-left: auto; color: var(--muted); transition: transform .15s; }
+  .ev[open] .head::after { transform: rotate(90deg); }
   .idx { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
   .name { font-weight: 600; font-size: 12px; color: #fff; background: var(--kind); padding: 1px 8px; border-radius: 4px; }
   .title { font-weight: 600; font-size: 16px; word-break: break-word; }
@@ -148,13 +152,13 @@ function render() {
     const btn = get(e, 'buttonName'), url = get(e, 'url'), status = get(e, 'statusCode');
     const title = btn || url || screen || e.name;
     const rows = e.props.filter(([k, v]) => !shared.has(k) && !(hideEmpty && v === ''));
-    return `<div class="ev" style="--kind:var(--c-${kind})">
-      <div class="head"><span class="idx">#${n}</span><span class="name">${esc(e.name)}</span>
+    return `<details class="ev" style="--kind:var(--c-${kind})">
+      <summary><div class="head"><span class="idx">#${n}</span><span class="name">${esc(e.name)}</span>
         <span class="title">${esc(title)}</span>
-        ${status ? `<span class="badge ${status[0] === '2' ? 's2' : status[0] === '4' || status[0] === '5' ? 's4' : ''}">${esc(status)}</span>` : ''}</div>
+        ${status ? `<span class="badge ${status[0] === '2' ? 's2' : status[0] === '4' || status[0] === '5' ? 's4' : ''}">${esc(status)}</span>` : ''}</div></summary>
       ${prev && screen ? `<div class="flow"><code>${esc(prev)}</code> → <code>${esc(screen)}</code></div>` : ''}
       <table>${rows.map(([k, v]) => `<tr><td>${esc(k)}</td><td class="${v === '' ? 'empty' : ''}">${v === '' ? '—' : valHtml(v)}</td></tr>`).join('')}</table>
-    </div>`;
+    </details>`;
   }).join('') + '</div>';
   $('out').innerHTML = html;
 }
